@@ -1,0 +1,226 @@
+### 1. Проходим аутентификацию системным пользователем по умолчанию
+POST http://localhost:8080/auth?userName=librarianAdmin&password=123
+Content-Type: application/json
+
+{
+  "data": "my-secret-token"
+}
+
+> {% client.global.set("auth_token_librarianAdmin", response.body.data); %}
+
+### 2. Создаем библиотекаря (susses)
+POST http://localhost:8080/librarian
+content-type:application/json
+Authorization: Bearer_{{auth_token_librarianAdmin}}
+
+{
+  "login": "lib",
+  "password": "123",
+  "surname": "Бибилотекарев",
+  "name": "Библиотекарь",
+  "patronymic": "Библиотекаревич"
+}
+
+### 3. Создаем библиотекаря (fail)
+POST http://localhost:8080/librarian
+content-type:application/json
+
+{
+  "login": "lib2",
+  "password": "123",
+  "surname": "Бибилотекарев",
+  "name": "Библиотекарь",
+  "patronymic": "Библиотекаревич"
+}
+
+### 4. Проходим аутентификацию библиотекарем созаднным на шаге 2
+POST http://localhost:8080/auth?userName=lib&password=123
+Content-Type: application/json
+
+{
+  "data": "my-secret-token"
+}
+
+> {% client.global.set("auth_token_lib1", response.body.data); %}
+
+### 5. Создаем читателя (susses)
+POST http://localhost:8080/readers
+content-type: application/json
+Authorization: Bearer_{{auth_token_lib1}}
+
+{
+  "login": "ali",
+  "password": "123",
+  "surname": "АлиАли",
+  "name": "Али",
+  "patronymic": "Алисович"
+}
+
+### 6. Создаем читателя (fail)
+POST http://localhost:8080/readers
+content-type: application/json
+
+{
+  "login": "ali2",
+  "password": "123",
+  "surname": "Бабаев",
+  "name": "Али",
+  "patronymic": "Баба"
+}
+
+### 7. Создаем читателя (success)
+POST http://localhost:8080/readers
+content-type: application/json
+Authorization: Bearer_{{auth_token_lib1}}
+
+{
+  "login": "ivan",
+  "password": "123",
+  "surname": "Иванов",
+  "name": "Иван",
+  "patronymic": "Иванович"
+}
+
+### 8. Проходим аутентификацию читателем ali (success)
+POST http://localhost:8080/auth?userName=ali&password=123
+Content-Type: application/json
+
+{
+  "data": "my-secret-token"
+}
+
+> {% client.global.set("auth_token_ali", response.body.data); %}
+
+### 8. Проходим аутентификацию читателем ivan (success)
+POST http://localhost:8080/auth?userName=ivan&password=123
+Content-Type: application/json
+
+{
+  "data": "my-secret-token"
+}
+
+> {% client.global.set("auth_token_ivan", response.body.data); %}
+
+
+### 8. Создаем книгу (fail)
+POST http://localhost:8080/book
+content-type: application/json
+
+{
+  "title": "Корабль Иштар",
+  "author": "Меррит А.Г."
+}
+
+### 9. Создаем книгу читателем ali(fail)
+POST http://localhost:8080/book
+content-type: application/json
+Authorization: Bearer_{{auth_token_ali}}
+
+{
+  "title": "Корабль Иштар",
+  "author": "Меррит А.Г."
+}
+
+### 10. Создаем книгу библиотекарем lib1(success)
+POST http://localhost:8080/book
+content-type: application/json
+Authorization: Bearer_{{auth_token_lib1}}
+
+{
+  "title": "Корабль Иштар",
+  "author": "Меррит А.Г."
+}
+
+
+### 11. Создаем книгу библиотекарем lib(success)
+POST http://localhost:8080/book
+content-type: application/json
+Authorization: Bearer_{{auth_token_lib1}}
+
+{
+  "title": "Маятник Фуко",
+  "author": "Умберто Э.Д."
+}
+
+### 12. Создаем книгу библиотекарем lib(success)
+POST http://localhost:8080/book
+content-type: application/json
+Authorization: Bearer_{{auth_token_lib1}}
+
+{
+  "title": "Трое из леса",
+  "author": "Никитин Ю.А."
+}
+
+### 13. Создаем книгу библиотекарем lib(success)
+POST http://localhost:8080/book
+content-type: application/json
+Authorization: Bearer_{{auth_token_lib1}}
+
+{
+  "title": "Песнь льда и пламени",
+  "author": "Джордж Р.Р.М."
+}
+
+### 14. Получаем список всех книг читателем ali(success)
+GET http://localhost:8080/book
+content-type: application/json
+Authorization: Bearer_{{auth_token_ali}}
+
+
+###15. Создаем заказ читателем ivan(success)
+POST localhost:8080/order?idUser=4&idBook=1
+Authorization: Bearer_{{auth_token_ivan}}
+
+###16. Попытка создать заказ аутентифицированным пользователем (ivan) для другого пользователя (fail)
+POST localhost:8080/order?idUser=3&idBook=1
+Authorization: Bearer_{{auth_token_ivan}}
+
+###17. Просмотр всех доступных книг к заказу (success)
+GET http://localhost:8080/book/available
+content-type: application/json
+Authorization: Bearer_{{auth_token_ivan}}
+
+###18. Попытка заказать читателем ali ранее заказанной книги(fail)
+POST localhost:8080/order?idUser=3&idBook=1
+Authorization: Bearer_{{auth_token_ali}}
+
+###19. Создаем заказ читателем ivan(success)
+POST localhost:8080/order?idUser=4&idBook=2
+Authorization: Bearer_{{auth_token_ivan}}
+
+###20. Создаем заказ читателем ivan(success)
+POST localhost:8080/order?idUser=4&idBook=3
+Authorization: Bearer_{{auth_token_ivan}}
+
+###21. Создаем заказ читателем ivan 4 книги подряд(fail)
+POST localhost:8080/order?idUser=4&idBook=4
+Authorization: Bearer_{{auth_token_ivan}}
+
+###22. Возвращаем книгу из заказа у читателя ivan (success)
+PUT localhost:8080/order/3/return
+Authorization: Bearer_{{auth_token_ivan}}
+
+###23. Попытка повторного возврата заказа у читателя ivan(fail)
+PUT localhost:8080/order/3/return
+Authorization: Bearer_{{auth_token_ivan}}
+
+###24. Получаем список всех заказов (success)
+GET localhost:8080/order
+Authorization: Bearer_{{auth_token_lib1}}
+
+###25. Получаем список всех заказов конерктного читателя(success)
+GET localhost:8080/order/user/4
+Authorization: Bearer_{{auth_token_lib1}}
+
+###26. Поиск книги по названию (success)
+GET localhost:8080/book/find/title?title=Корабль Иштар
+Authorization: Bearer_{{auth_token_ivan}}
+
+###27. Поиск книги по неполному названию (success)
+GET localhost:8080/book/find/title?title=Корабль
+Authorization: Bearer_{{auth_token_ivan}}
+
+###28. Поиск книги по неполному указанию автора (success)
+GET localhost:8080/book/find/author?author=Мерри
+Authorization: Bearer_{{auth_token_ivan}}

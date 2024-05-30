@@ -199,11 +199,11 @@ Authorization: Bearer_{{auth_token_ivan}}
 
 ###22. Возвращаем книгу из заказа у читателя ivan (success)
 PUT localhost:8080/order/3/return
-Authorization: Bearer_{{auth_token_ivan}}
+Authorization: Bearer_{{auth_token_lib1}}
 
 ###23. Попытка повторного возврата заказа у читателя ivan(fail)
 PUT localhost:8080/order/3/return
-Authorization: Bearer_{{auth_token_ivan}}
+Authorization: Bearer_{{auth_token_lib1}}
 
 ###24. Получаем список всех заказов (success)
 GET localhost:8080/order

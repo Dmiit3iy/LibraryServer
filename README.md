@@ -31,6 +31,6 @@
 1.	Осуществить копирование репозитория
 2.	Создать базу данных в СУБД Mysql
 3.	Внести изменения в файл application.properties указа свои параметры подключения:
-spring.datasource.url=jdbc:mysql://localhost:3306/***Название_вашей_БД**?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=Asia/Yekaterinburg  
-spring.datasource.username=***указать_пользователя_вашей_БД**  
-spring.datasource.password=***указать_пароль_пользовтеля_вашей_БД**
+spring.datasource.url=jdbc:mysql://localhost:3306/**Название_вашей_БД**?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=Asia/Yekaterinburg  
+spring.datasource.username=**указать_пользователя_вашей_БД**  
+spring.datasource.password=**указать_пароль_пользовтеля_вашей_БД**
